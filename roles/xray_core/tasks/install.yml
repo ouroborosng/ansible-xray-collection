@@ -51,7 +51,7 @@
         dst: "{{ xray_core_assets_dir }}"
         mode: "0644"
   notify:
-    - restart xray service
+    - Restart xray service
 
 - name: Install latest geoip.dat and geosite.dat
   quera.github.install_from_github:
@@ -65,7 +65,7 @@
     - geoip.dat
     - geosite.dat
   notify:
-    - restart xray service
+    - Restart xray service
 
 - name: Install xray systemd service
   ansible.builtin.template:
@@ -75,7 +75,7 @@
     group: root
     mode: "0644"
   notify:
-    - restart xray service
+    - Restart xray service
 
 - name: Enable/Disable xray service
   ansible.builtin.systemd_service:
