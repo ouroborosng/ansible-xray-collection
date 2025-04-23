@@ -67,7 +67,9 @@ Create a requirements.yml file in Ansible project and add an entry for the colle
 # requirements.yml
 collections:
   - name: ouroborosng.xray
-    src: git+https://github.com/ouroborosng/ansible-xray-collection.git
+    source: git+https://github.com/ouroborosng/ansible-xray-collection.git
+    type: git
+    version: main
 ```
 
 Then, run the following command to install both roles and collections defined in the file:
@@ -86,6 +88,24 @@ ansible-galaxy collection install git+https://github.com/ouroborosng/ansible-xra
 ```
 
 This command instructs Ansible Galaxy to fetch and install the collection from the specified Git repository URL, making it immediately available for use in the playbooks.
+
+**Optional: Removing the Collection**
+
+This pipeline uses `ansible-config dump` to list the configured `COLLECTIONS_PATHS`, filters each absolute directory, searches for the `ouroborosng` collection under `ansible_collections`, and removes its contents:
+
+```sh
+ansible-config dump \
+  | grep COLLECTIONS_PATHS \
+  | awk -F"[' ,]" '{for(i=1;i<=NF;i++) if($i ~ /^\//) print $i}' \
+  | xargs -I {} find {}/ansible_collections/ouroborosng -mindepth 1 -maxdepth 1 -type d -print \
+  | xargs -I {} rm -rf {}
+```
+
+To confirm the collection has been removed, run:
+
+```sh
+ansible-galaxy collection list | grep ouroborosng.xray || echo "Collection 'ouroborosng.xray' not found"
+```
 
 **2. Playbook Usage:**
 
