@@ -1,0 +1,38 @@
+# Byte-compiled / cache files
+__pycache__/
+*.py[cod]
+*$py.class
+
+# Distribution / packaging artifacts
+*.tar.gz
+dist/
+build/
+*.egg-info/
+
+# Ansible artifacts
+*.retry            # playbook retry files
+inventory/cache/   # dynamic inventory caches
+
+# Local Collection installation (for testing with ansible-test)
+ansible_collections/
+
+# Test / lint artifacts
+.pytest_cache/
+.ansible-lint      # ansible-lint cache/log
+ansible-test-*.log # ansible-test logs
+.molecule/         # Molecule test scenarios
+
+# Python virtual environments
+.env/
+.venv/
+venv/
+ENV/
+.Python
+
+# Editors / IDEs & OS files
+.vscode/
+.idea/
+*.swp
+*~
+.DS_Store
+Thumbs.db

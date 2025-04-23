@@ -1,0 +1,82 @@
+xray_core_enabled: true
+xray_core_user: xray
+xray_core_group: xray
+xray_core_assets_dir: /usr/local/share/xray
+xray_core_config_dir: /usr/local/etc/xray
+xray_core_logs_dir: /var/log/xray
+xray_core_config_file: "{{ xray_core_config_dir }}/config.json"
+
+# content of xray config
+xray_core_port: 14433
+xray_core_reality_dest: ""
+xray_core_reality_private_key: ""
+xray_core_reality_short_id: ""
+
+xray_core_config:
+  log:
+    loglevel: warning
+    access: "/var/log/xray/access.log"
+    error: "/var/log/xray/error.log"
+  dns:
+    servers:
+      - "https+local://1.1.1.1/dns-query"
+      - localhost
+  routing:
+    domainStrategy: IPIfNonMatch
+    rules:
+      - type: field
+        ip:
+          - geoip:private
+        outboundTag: block
+      - type: field
+        ip:
+          - geoip:cn
+        outboundTag: block
+      - type: field
+        domain:
+          - geosite:category-ads-all
+        outboundTag: block
+      - domain:
+          - domain:iqiyi.com
+          - domain:video.qq.com
+          - domain:youku.com
+          - domain:bilibili.com
+        type: field
+        outboundTag: block
+      - protocol:
+          - bittorrent
+        type: field
+        outboundTag: block
+  policy:
+    system:
+      statsInboundUplink: true
+      statsInboundDownlink: true
+  stats: {}
+  inbounds:
+    - listen: 0.0.0.0
+      port: "{{ xray_core_port }}"
+      protocol: vless
+      settings:
+        clients:
+          - id: "{{ xray_client_uuid }}"
+            flow: xtls-rprx-vision
+        decryption: none
+      streamSettings:
+        network: tcp
+        security: reality
+        realitySettings:
+          dest: "{{ xray_core_reality_dest }}:443"
+          serverNames:
+            - "{{ xray_core_reality_dest }}"
+          privateKey: "{{ xray_core_reality_private_key }}"
+          shortIds:
+            - "{{ xray_core_reality_short_id }}"
+      sniffing:
+        enabled: true
+        destOverride:
+          - http
+          - tls
+          - quic
+          - fakedns
+  outbounds:
+    - protocol: freedom

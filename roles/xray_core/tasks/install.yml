@@ -1,0 +1,85 @@
+- name: Create xray group
+  ansible.builtin.group:
+    name: "{{ xray_core_group }}"
+
+- name: Create xray user
+  ansible.builtin.user:
+    name: "{{ xray_core_user }}"
+    group: "{{ xray_core_group }}"
+    createhome: false
+
+- name: Create assets and config directories
+  ansible.builtin.file:
+    path: "{{ item }}"
+    state: directory
+    owner: root
+    group: root
+    mode: "0755"
+  with_items:
+    - "{{ xray_core_assets_dir }}"
+    - "{{ xray_core_config_dir }}"
+
+- name: Create logs directory
+  ansible.builtin.file:
+    path: "{{ xray_core_logs_dir }}"
+    state: directory
+    owner: "{{ xray_core_user }}"
+    group: "{{ xray_core_group }}"
+    mode: "0750"
+
+- name: Create initial config file
+  ansible.builtin.copy:
+    content: "{}"
+    dest: "{{ xray_core_config_file }}"
+    owner: "{{ xray_core_user }}"
+    group: "{{ xray_core_group }}"
+    mode: "0644"
+    force: false
+
+- name: Install xray
+  quera.github.install_from_github:
+    repo: XTLS/Xray-core
+    asset_regex: Xray-.*\.zip
+    asset_arch_mapping:
+      amd64: "64"
+    version_command: xray --version
+    move_rules:
+      - src_regex: xray
+        dst: /usr/local/bin
+        mode: "0755"
+      - src_regex: .*\.dat
+        dst: "{{ xray_core_assets_dir }}"
+        mode: "0644"
+  notify:
+    - restart xray service
+
+- name: Install latest geoip.dat and geosite.dat
+  quera.github.install_from_github:
+    repo: Loyalsoldier/v2ray-rules-dat
+    asset_regex: "{{ item }}"
+    version_file: "{{ xray_core_assets_dir }}/{{ item }}.version"
+    move_rules:
+      - src_regex: "{{ item }}"
+        dst: "{{ xray_core_assets_dir }}"
+  loop:
+    - geoip.dat
+    - geosite.dat
+  notify:
+    - restart xray service
+
+- name: Install xray systemd service
+  ansible.builtin.template:
+    src: xray.service
+    dest: /etc/systemd/system/xray.service
+    owner: root
+    group: root
+    mode: "0644"
+  notify:
+    - restart xray service
+
+- name: Enable/Disable xray service
+  ansible.builtin.systemd_service:
+    name: xray
+    enabled: "{{ xray_core_enabled }}"
+    state: "{{ xray_core_enabled | ternary('started', 'stopped') }}"
+    daemon_reload: true

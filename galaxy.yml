@@ -1,0 +1,28 @@
+namespace: ouroborosng
+name: xray
+version: 1.0.0
+readme: README.md
+authors:
+  - ouroborosng
+description: xray ansible collection
+license:
+  - MIT
+tags:
+  - xtls
+  - xray
+  - xray-core
+  - vless
+  - reality
+
+dependencies:
+  git@github.com:QueraTeam/ansible-github.git: main
+
+repository: https://github.com/ouroborosng/ansible-xray-collection.git
+documentation: https://github.com/ouroborosng/ansible-xray-collection
+homepage: https://github.com/ouroborosng/ansible-xray-collection
+issues: https://github.com/ouroborosng/ansible-xray-collection/issues
+
+build_ignore:
+  - ".git"
+  - ".gitignore"
+  - "ansible_collections"

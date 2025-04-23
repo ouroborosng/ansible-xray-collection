@@ -1,0 +1,45 @@
+---
+- name: Generate Xray client UUID if not provided
+  ansible.builtin.command: xray uuid
+  register: xray_uuid_output
+  changed_when: false
+  when: xray_client_uuid is not defined or xray_client_uuid | length == 0
+
+- name: Set xray_client_uuid fact from command output
+  ansible.builtin.set_fact:
+    xray_client_uuid: "{{ xray_uuid_output.stdout | trim }}"
+  when: xray_uuid_output.stdout is defined
+
+- name: Check and Generate Xray Reality key pair if private key not provided
+  ansible.builtin.command: xray x25519
+  register: xray_x25519_output
+  changed_when: false
+  when: xray_core_reality_private_key is not defined or xray_core_reality_private_key | length == 0
+
+- name: Set xray_core_reality_private_key fact from command output
+  ansible.builtin.set_fact:
+    xray_core_reality_private_key: "{{ xray_x25519_output.stdout | regex_search('Private key: (\\S+)', '\\1') | first | trim }}"
+  when: xray_x25519_output.stdout is defined
+
+- name: Check and Generate Xray Reality Short ID if not provided
+  ansible.builtin.command: openssl rand -hex 8
+  register: openssl_rand_output
+  changed_when: false
+  when: xray_core_reality_short_id is not defined or xray_core_reality_short_id | length == 0
+
+- name: Set xray_core_reality_short_id fact from command output
+  ansible.builtin.set_fact:
+    xray_core_reality_short_id: "{{ openssl_rand_output.stdout | trim }}"
+  when: openssl_rand_output.stdout is defined
+
+- name: Configure xray
+  ansible.builtin.template:
+    src: xray.config.json
+    dest: "{{ xray_core_config_file }}"
+    owner: "{{ xray_core_user }}"
+    group: "{{ xray_core_group }}"
+    mode: "0640"
+  tags:
+    - xray-core-config
+  notify:
+    - Restart xray service

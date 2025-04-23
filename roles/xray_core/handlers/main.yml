@@ -1,0 +1,7 @@
+---
+- name: Restart xray service
+  ansible.builtin.service:
+    name: xray
+    state: restarted
+  become: true
+  when: xray_core_enabled
