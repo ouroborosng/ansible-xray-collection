@@ -68,7 +68,6 @@ Create a requirements.yml file in Ansible project and add an entry for the colle
 collections:
   - name: ouroborosng.xray
     src: git+https://github.com/ouroborosng/ansible-xray-collection.git
-    version: main
 ```
 
 Then, run the following command to install both roles and collections defined in the file:
