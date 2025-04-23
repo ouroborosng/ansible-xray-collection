@@ -94,8 +94,10 @@ This command instructs Ansible Galaxy to fetch and install the collection from t
 - name: Setup Xray Server
   hosts: your_xray_servers
   become: true # Most tasks require root privileges
+  collections:
+    - ouroborosng.xray
   roles:
-    - role: ouroborosng.xray
+    - name: xray_core
       vars:
         xray_core_reality_dest: "www.your-chosen-domain.com" # REQUIRED: Set your target domain for REALITY protocol
         xray_core_port: 443 # Optional: override default port
