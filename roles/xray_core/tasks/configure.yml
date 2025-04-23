@@ -1,6 +1,6 @@
 ---
 - name: Generate Xray client UUID if not provided
-  ansible.builtin.command: xray uuid
+  ansible.builtin.command: /usr/local/bin/xray uuid
   register: xray_uuid_output
   changed_when: false
   when: xray_client_uuid is not defined or xray_client_uuid | length == 0
@@ -11,7 +11,7 @@
   when: xray_uuid_output.stdout is defined
 
 - name: Check and Generate Xray Reality key pair if private key not provided
-  ansible.builtin.command: xray x25519
+  ansible.builtin.command: /usr/local/bin/xray x25519
   register: xray_x25519_output
   changed_when: false
   when: xray_core_reality_private_key is not defined or xray_core_reality_private_key | length == 0
