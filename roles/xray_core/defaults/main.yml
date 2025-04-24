@@ -9,6 +9,7 @@ xray_core_config_file: "{{ xray_core_config_dir }}/config.json"
 # content of xray config
 xray_core_port: 14433
 xray_core_reality_dest: ""
+xray_core_client_uuid: ""
 xray_core_reality_private_key: ""
 xray_core_reality_short_id: ""
 
@@ -58,7 +59,7 @@ xray_core_config:
       protocol: vless
       settings:
         clients:
-          - id: "{{ xray_client_uuid }}"
+          - id: "{{ xray_core_client_uuid }}"
             flow: xtls-rprx-vision
         decryption: none
       streamSettings:
