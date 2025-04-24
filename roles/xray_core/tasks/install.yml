@@ -61,20 +61,6 @@
     notify:
       - Restart xray service
 
-  - name: Install latest geoip.dat and geosite.dat
-    quera.github.install_from_github:
-      repo: Loyalsoldier/v2ray-rules-dat
-      asset_regex: "{{ item }}"
-      version_file: "{{ xray_core_assets_dir }}/{{ item }}.version"
-      move_rules:
-        - src_regex: "{{ item }}"
-          dst: "{{ xray_core_assets_dir }}"
-    loop:
-      - geoip.dat
-      - geosite.dat
-    notify:
-      - Restart xray service
-
   - name: Install xray systemd service
     ansible.builtin.template:
       src: xray.service
@@ -107,3 +93,19 @@
       enabled: "{{ xray_core_enabled }}"
       state: "{{ xray_core_enabled | ternary('started', 'stopped') }}"
       daemon_reload: true
+
+  when: not xray_installed.stat.exists
+
+- name: Install latest geoip.dat and geosite.dat
+  quera.github.install_from_github:
+    repo: Loyalsoldier/v2ray-rules-dat
+    asset_regex: "{{ item }}"
+    version_file: "{{ xray_core_assets_dir }}/{{ item }}.version"
+    move_rules:
+      - src_regex: "{{ item }}"
+        dst: "{{ xray_core_assets_dir }}"
+  loop:
+    - geoip.dat
+    - geosite.dat
+  notify:
+    - Restart xray service
