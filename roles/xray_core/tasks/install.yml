@@ -77,6 +77,22 @@
   notify:
     - Restart xray service
 
+- name: Check for restorecon command existence
+  ansible.builtin.stat:
+    path: /usr/sbin/restorecon
+  register: restorecon_cmd
+
+- name: Restore SELinux context for xray binary if needed
+  ansible.builtin.command: restorecon -v /usr/local/bin/xray
+  register: restorecon_output
+  changed_when: "'relabelled' in restorecon_output.stdout"
+  when:
+    - ansible_selinux is defined
+    - ansible_selinux.status == "enabled"
+    - ansible_selinux.mode == "enforcing"
+    - not ansible_check_mode
+    - restorecon_cmd.stat.exists
+
 - name: Enable/Disable xray service
   ansible.builtin.systemd_service:
     name: xray
