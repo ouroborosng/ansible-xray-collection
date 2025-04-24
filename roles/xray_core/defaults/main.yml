@@ -64,6 +64,9 @@ xray_core_config:
       streamSettings:
         network: tcp
         security: reality
+        sockopt:
+          tcpMaxSeg: 1400
+          tcpFastOpen: true
         realitySettings:
           dest: "{{ xray_core_reality_dest }}:443"
           serverNames:
@@ -73,6 +76,7 @@ xray_core_config:
             - "{{ xray_core_reality_short_id }}"
       sniffing:
         enabled: true
+        routeOnly: true
         destOverride:
           - http
           - tls
@@ -80,3 +84,4 @@ xray_core_config:
           - fakedns
   outbounds:
     - protocol: freedom
+    - protocol: blackhole
