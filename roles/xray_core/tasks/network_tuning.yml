@@ -1,0 +1,28 @@
+---
+- name: Load the tcp_bbr kernel module
+  ansible.builtin.modprobe:
+    name: tcp_bbr
+    state: present
+
+- name: Enable TCP BBR Congestion Control
+  become: true
+  ansible.posix.sysctl:
+    name: "{{ item.name }}"
+    value: "{{ item.value }}"
+    sysctl_file: /etc/sysctl.d/99-bbr-settings.conf
+    state: present
+    reload: true
+  loop:
+    - { name: 'net.core.default_qdisc', value: 'fq' }
+    - { name: 'net.ipv4.tcp_congestion_control', value: 'bbr' }
+
+- name: Verify BBR is enabled
+  ansible.builtin.shell: sysctl net.ipv4.tcp_congestion_control
+  register: bbr_status
+  changed_when: false
+
+- name: Assert BBR is active
+  ansible.builtin.assert:
+    that:
+      - "'bbr' in bbr_status.stdout"
+    fail_msg: "BBR failed to enable"

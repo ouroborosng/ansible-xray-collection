@@ -4,3 +4,6 @@
 
 - name: Configuration tasks
   ansible.builtin.include_tasks: configure.yml
+
+- name: Apply network tuning
+  ansible.builtin.include_tasks: network_tuning.yml

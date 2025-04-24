@@ -1,12 +1,13 @@
 # Ansible Role: Xray
 
-Installs and configures [Xray-core](https://github.com/XTLS/Xray-core) with a basic VLESS+REALITY setup using systemd on Linux hosts.
+Installs and configures [Xray-core](https://github.com/XTLS/Xray-core) with a basic VLESS+REALITY setup using systemd on Linux hosts. Includes optional network tuning (TCP BBR) for potentially improved performance.
 
 ## Requirements
 
 ### Prerequisites on Managed Node (Target Server)
 
 *   **openssl:** Used to generate a random short ID for REALITY if one is not provided. Most Linux distributions include this by default.
+* **Linux Kernel >= 4.9:** Required for the TCP BBR network tuning feature to be effective.
 
 ### Prerequisites on Ansible Control Node
 
