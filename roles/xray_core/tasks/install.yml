@@ -51,7 +51,6 @@
       asset_arch_mapping:
         amd64: "64"
       version_command: xray --version
-      version_file: /usr/local/bin/xray.version
       move_rules:
         - src_regex: xray
           dst: /usr/local/bin
