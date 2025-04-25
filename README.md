@@ -126,3 +126,16 @@ ansible-galaxy collection list | grep ouroborosng.xray || echo "Collection 'ouro
 
 > 💡 Note:<br>
 > Ensure you have installed the collection (e.g. via a requirements.yml file or direct Git URL installation) before running this playbook.
+
+## Re-running Configuration
+
+This role is idempotent by design and **will not** overwrite an existing Xray configuration file (`{{ xray_core_config_dir }}/config.json`). This safeguard prevents accidental loss of generated UUIDs, private keys, or any other custom settings when the playbook is executed again.
+
+When role variables (e.g., in `defaults/main.yml`) or the configuration template (`templates/xray.config.json.j2`) have been updated and those changes must be applied to an existing deployment, remove the current configuration file before re-running the playbook:
+
+```sh
+sudo rm /usr/local/etc/xray/config.json
+```
+
+After removing the file, running the playbook again will regenerate the configuration based on the current variables and template.
+
