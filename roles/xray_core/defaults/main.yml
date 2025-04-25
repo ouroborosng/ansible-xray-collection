@@ -94,7 +94,7 @@ xray_core_config:
     - tag: block
       protocol: blackhole
       mux:
-        "enabled": true,
-        "concurrency": 16,
-        "xudpConcurrency": 64,
+        "enabled": true
+        "concurrency": 16
+        "xudpConcurrency": 64
         "xudpProxyUDP443": "allow"
