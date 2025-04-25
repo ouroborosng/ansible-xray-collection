@@ -20,8 +20,14 @@ xray_core_config:
     error: "/var/log/xray/error.log"
   dns:
     servers:
+      - "fakedns"
       - "https+local://1.1.1.1/dns-query"
-      - localhost
+      - "localhost"
+  fakedns:
+    - ipPool:  "198.20.0.0/15"
+      poolSize: 512
+    - ipPool: "fc00::/64"
+      poolSize: 512
   routing:
     domainStrategy: IPIfNonMatch
     rules:
@@ -77,12 +83,18 @@ xray_core_config:
             - "{{ xray_core_reality_short_id }}"
       sniffing:
         enabled: true
-        routeOnly: true
         destOverride:
           - http
           - tls
           - quic
           - fakedns
   outbounds:
-    - protocol: freedom
-    - protocol: blackhole
+    - tag: direct
+      protocol: freedom
+    - tag: block
+      protocol: blackhole
+      mux:
+        "enabled": true,
+        "concurrency": 16,
+        "xudpConcurrency": 64,
+        "xudpProxyUDP443": "allow"
